@@ -1,35 +1,17 @@
-"""
-CSCI 341 - Assignment 3 - Part 2
-Database Queries using SQLAlchemy
-
-INSTALLATION REQUIRED:
-pip install sqlalchemy psycopg2-binary
-
-Replace the DATABASE_URL with your PostgreSQL credentials.
-"""
-
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-# ==================== DATABASE CONNECTION ====================
-# CHANGE THESE VALUES to match your PostgreSQL setup
 DATABASE_URL = "postgresql://postgres:9@localhost:5432/dbass3"
-
 
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-print("=" * 70)
-print("CSCI 341 - Assignment 3 - Part 2: SQL Queries")
-print("=" * 70)
-
-# ==================== 3. UPDATE SQL STATEMENTS ====================
-print("\n" + "=" * 70)
+print("\n" + "=" * 67)
 print("3. UPDATE SQL STATEMENTS")
-print("=" * 70)
+print("=" * 67)
 
-# 3.1 Update phone number of Arman Armanov
+
 print("\n3.1 Update phone number of Arman Armanov to +77773414141")
 update_query_3_1 = text("""
     UPDATE "USER"
@@ -40,7 +22,7 @@ result = session.execute(update_query_3_1)
 session.commit()
 print(f"Rows updated: {result.rowcount}")
 
-# Verify the update
+
 verify_query = text("""
     SELECT given_name, surname, phone_number 
     FROM "USER" 
@@ -50,7 +32,7 @@ result = session.execute(verify_query)
 for row in result:
     print(f"Verified: {row.given_name} {row.surname} - {row.phone_number}")
 
-# 3.2 Add commission fee to caregivers' hourly rate
+
 print("\n3.2 Add commission fee to Caregivers' hourly rate")
 print("    - Add $0.3 if rate < $10")
 print("    - Add 10% if rate >= $10")
@@ -65,7 +47,7 @@ result = session.execute(update_query_3_2)
 session.commit()
 print(f"Rows updated: {result.rowcount}")
 
-# Verify the update
+
 verify_query = text("""
     SELECT c.caregiver_user_id, u.given_name, u.surname, c.hourly_rate
     FROM CAREGIVER c
@@ -78,12 +60,12 @@ print("Sample updated rates:")
 for row in result:
     print(f"  {row.given_name} {row.surname}: ${row.hourly_rate:.2f}")
 
-# ==================== 4. DELETE SQL STATEMENTS ====================
-print("\n" + "=" * 70)
-print("4. DELETE SQL STATEMENTS")
-print("=" * 70)
 
-# 4.1 Delete jobs posted by Amina Aminova
+print("\n" + "=" * 67)
+print("4. DELETE SQL STATEMENTS")
+print("=" * 67)
+
+
 print("\n4.1 Delete jobs posted by Amina Aminova")
 delete_query_4_1 = text("""
     DELETE FROM JOB
@@ -97,7 +79,7 @@ result = session.execute(delete_query_4_1)
 session.commit()
 print(f"Jobs deleted: {result.rowcount}")
 
-# 4.2 Delete all members who live on Kabanbay Batyr street
+
 print("\n4.2 Delete all members who live on Kabanbay Batyr street")
 delete_query_4_2 = text("""
     DELETE FROM "USER"
@@ -112,12 +94,12 @@ result = session.execute(delete_query_4_2)
 session.commit()
 print(f"Members deleted: {result.rowcount}")
 
-# ==================== 5. SIMPLE QUERIES ====================
-print("\n" + "=" * 70)
-print("5. SIMPLE QUERIES")
-print("=" * 70)
 
-# 5.1 Select caregiver and member names for accepted appointments
+print("\n" + "=" * 67)
+print("5. SIMPLE QUERIES")
+print("=" * 67)
+
+
 print("\n5.1 Caregiver and member names for accepted appointments:")
 query_5_1 = text("""
     SELECT 
@@ -135,7 +117,7 @@ for row in result:
     print(f"  Caregiver: {row.caregiver_name} {row.caregiver_surname} | "
           f"Member: {row.member_name} {row.member_surname}")
 
-# 5.2 List job ids that contain 'soft-spoken' in their other requirements
+
 print("\n5.2 Job IDs with 'soft-spoken' in requirements:")
 query_5_2 = text("""
     SELECT job_id, other_requirements
@@ -146,7 +128,7 @@ result = session.execute(query_5_2)
 for row in result:
     print(f"  Job ID: {row.job_id} - {row.other_requirements}")
 
-# 5.3 List the work hours of all babysitter positions
+
 print("\n5.3 Work hours of all babysitter appointments:")
 query_5_3 = text("""
     SELECT a.appointment_id, a.work_hours, a.appointment_date
@@ -158,7 +140,7 @@ result = session.execute(query_5_3)
 for row in result:
     print(f"  Appointment {row.appointment_id}: {row.work_hours} hours on {row.appointment_date}")
 
-# 5.4 List members looking for Elderly Care in Astana with "No pets." rule
+
 print("\n5.4 Members seeking Elderly Care in Astana with 'No pets.' rule:")
 query_5_4 = text("""
     SELECT u.given_name, u.surname, m.house_rules
@@ -173,12 +155,12 @@ result = session.execute(query_5_4)
 for row in result:
     print(f"  {row.given_name} {row.surname} - Rules: {row.house_rules}")
 
-# ==================== 6. COMPLEX QUERIES ====================
-print("\n" + "=" * 70)
-print("6. COMPLEX QUERIES")
-print("=" * 70)
 
-# 6.1 Count number of applicants for each job posted by a member
+print("\n" + "=" * 67)
+print("6. COMPLEX QUERIES")
+print("=" * 67)
+
+
 print("\n6.1 Number of applicants for each job:")
 query_6_1 = text("""
     SELECT 
@@ -197,7 +179,7 @@ for row in result:
     print(f"  Job {row.job_id} ({row.required_caregiving_type}) by {row.posted_by}: "
           f"{row.applicant_count} applicants")
 
-# 6.2 Total hours spent by caregivers for all accepted appointments
+
 print("\n6.2 Total hours worked by each caregiver (accepted appointments):")
 query_6_2 = text("""
     SELECT 
@@ -215,7 +197,7 @@ result = session.execute(query_6_2)
 for row in result:
     print(f"  {row.caregiver_name} ({row.caregiving_type}): {row.total_hours} hours")
 
-# 6.3 Average pay of caregivers based on accepted appointments
+
 print("\n6.3 Average pay of caregivers (accepted appointments):")
 query_6_3 = text("""
     SELECT 
@@ -234,7 +216,7 @@ for row in result:
     print(f"  {row.caregiver_name}: ${row.avg_hourly_rate:.2f}/hour "
           f"({row.appointment_count} appointments)")
 
-# 6.4 Caregivers who earn above average based on accepted appointments
+
 print("\n6.4 Caregivers earning above average:")
 query_6_4 = text("""
     SELECT 
@@ -263,10 +245,10 @@ for row in result:
     print(f"  {row.caregiver_name}: ${row.total_earnings:.2f} total "
           f"(${row.hourly_rate:.2f}/hour)")
 
-# ==================== 7. QUERY WITH DERIVED ATTRIBUTE ====================
-print("\n" + "=" * 70)
+
+print("\n" + "=" * 67)
 print("7. QUERY WITH DERIVED ATTRIBUTE")
-print("=" * 70)
+print("=" * 67)
 
 print("\n7. Total cost for each accepted appointment:")
 query_7 = text("""
@@ -289,14 +271,14 @@ for row in result:
     print(f"  Appointment {row.appointment_id}: {row.caregiver_name} -> {row.member_name}")
     print(f"    {row.work_hours} hours × ${row.hourly_rate:.2f}/hour = ${row.total_cost:.2f}")
 
-# ==================== 8. VIEW OPERATION ====================
-print("\n" + "=" * 70)
+
+print("\n" + "=" * 67)
 print("8. VIEW OPERATION")
-print("=" * 70)
+print("=" * 67)
 
 print("\n8. Creating view for all job applications and applicants:")
 
-# Create the view
+
 create_view = text("""
     CREATE OR REPLACE VIEW job_applications_view AS
     SELECT 
@@ -319,7 +301,7 @@ session.execute(create_view)
 session.commit()
 print("View 'job_applications_view' created successfully!")
 
-# Query the view
+
 print("\nQuerying the view:")
 query_view = text("""
     SELECT * FROM job_applications_view;
@@ -330,9 +312,9 @@ for row in result:
     print(f"    Applicant: {row.applicant_name} ({row.applicant_type}) - ${row.applicant_rate:.2f}/hour")
     print(f"    Applied on: {row.date_applied}")
 
-print("\n" + "=" * 70)
+print("\n" + "=" * 67)
 print("ALL QUERIES COMPLETED SUCCESSFULLY!")
-print("=" * 70)
+print("=" * 67)
 
 # Close the session
 session.close()
