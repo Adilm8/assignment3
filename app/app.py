@@ -3,12 +3,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
-# 1. FLASK SETUP
 app = Flask(__name__)
 app.secret_key = 'csci341_assignment3_secret'
 
-# 2. DATABASE CONNECTION
-# Use environment variable or default to the provided Neon DB URL
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'POSTGRES_URL', 
     "postgresql://neondb_owner:npg_YAa12uXvpOPd@ep-wandering-forest-ahwmlbmz-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require"
@@ -16,8 +13,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
-# 3. DATABASE MODELS (ORM)
 
 class User(db.Model):
     __tablename__ = 'USER' 
@@ -75,13 +70,11 @@ class JobApplication(db.Model):
     job_id = db.Column(db.Integer, db.ForeignKey('job.job_id'), primary_key=True)
     date_applied = db.Column(db.Date)
 
-# 4. WEB ROUTES (CRUD OPERATIONS)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# --- USER MANAGEMENT ---
 @app.route('/users')
 def list_users():
     try:
@@ -101,7 +94,6 @@ def list_users():
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
     try:
-        # Manually delete dependencies first
         db.session.execute(text('DELETE FROM caregiver WHERE caregiver_user_id = :uid'), {'uid': user_id})
         db.session.execute(text('DELETE FROM member WHERE member_user_id = :uid'), {'uid': user_id})
         db.session.execute(text('DELETE FROM job WHERE member_user_id = :uid'), {'uid': user_id}) 
@@ -113,7 +105,6 @@ def delete_user(user_id):
         flash(f'Error deleting user: {str(e)}', 'danger')
     return redirect(url_for('list_users'))
 
-# --- CAREGIVER (CREATE & UPDATE) ---
 @app.route('/caregiver/add', methods=['GET', 'POST'])
 def add_caregiver():
     if request.method == 'POST':
@@ -177,7 +168,6 @@ def edit_caregiver(user_id):
 
     return render_template('caregiver_form.html', action="Edit", user=user, caregiver=caregiver)
 
-# --- MEMBER (CREATE & UPDATE) ---
 @app.route('/member/add', methods=['GET', 'POST'])
 def add_member():
     if request.method == 'POST':
@@ -239,7 +229,6 @@ def edit_member(user_id):
 
     return render_template('member_form.html', action="Edit", user=user, member=member)
 
-# --- ADDRESS MANAGEMENT ---
 @app.route('/address/edit/<int:user_id>', methods=['GET', 'POST'])
 def edit_address(user_id):
     address = db.session.get(Address, user_id)
@@ -263,7 +252,6 @@ def edit_address(user_id):
             
     return render_template('address_form.html', address=address, user_id=user_id)
 
-# --- JOB MANAGEMENT (CRUD) ---
 @app.route('/jobs')
 def list_jobs():
     try:
@@ -307,7 +295,6 @@ def delete_job(job_id):
         flash(f"Error deleting job: {e}", "danger")
     return redirect(url_for('list_jobs'))
 
-# --- APPOINTMENT MANAGEMENT ---
 @app.route('/appointments')
 def list_appointments():
     try:
@@ -366,7 +353,6 @@ def delete_appointment(id):
         flash(f"Error: {e}", "danger")
     return redirect(url_for('list_appointments'))
 
-# --- JOB APPLICATION MANAGEMENT ---
 @app.route('/applications')
 def list_applications():
     try:
